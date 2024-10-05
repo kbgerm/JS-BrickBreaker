@@ -1,38 +1,38 @@
 const config = {
     squares: [
       {
-        position: '0, 25',
-        size: '60, 25',
+        position: [0, 25],
+        size: [60, 25],
         color: 'rgb(180, 180, 180)',
         hardness: undefined,
       },
       {
-        position: '60, 25',
-        size: '60, 25',
+        position: [60, 25],
+        size: [60, 25],
         color: 'rgb(238, 130, 238)',
         hardness: 1,
       },
       {
-        position: '120, 25',
-        size: '60, 25',
+        position: [120, 25],
+        size: [60, 25],
         color: 'rgb(0, 0, 255)',
         hardness: 2,
       }, 
       {
-        position: '120, 25',
-        size: '60, 25',
+        position: [180, 25],
+        size: [60, 25],
         color: 'rgb(255, 165, 0)',
         hardness: 3,
-      }
+      },
     ],
     ball : {
-      position: '60, 300',
-      size: '10, 10',
+      position: [60, 300],
+      size: [10, 10],
       color: 'rgb(106, 90, 205)',
     },
     platform: {
-      position: '145, 350',
-      size: '60, 10',
+      position: [145, 350],
+      size: [60, 10],
       color: 'rgb(60, 60, 60)',
     }
   };
@@ -47,28 +47,21 @@ function draw () {
   ctx.fillStyle = "rgb(200,0,0)";
   ctx.fillRect(0, 0, 350, 25);
 
-  // квадратики строка первая
-  // серый
-  ctx.fillStyle = "rgba(180, 180, 180)";
-  ctx.fillRect(0, 25, 60, 25);
+  // let x = [...config.squares[0].position,...config.squares[0].size];
+  // console.log(x);
 
-  // розовый
-  ctx.fillStyle = "rgba(238, 130, 238)";
-  ctx.fillRect(60, 25, 60, 25);
 
-  // синий
-  ctx.fillStyle = "rgba(0, 0, 255)";
-  ctx.fillRect(120, 25, 60, 25);
-
-  ctx.fillStyle = "rgba(255, 165, 0)";
-  ctx.fillRect(180, 25, 60, 25);
-
+  // отрисовка квадратов
+  for (let i = 0; i < config.squares.length; i++) {
+    ctx.fillStyle = config.squares[i].color;
+    ctx.fillRect(...config.squares[i].position,...config.squares[i].size);
+  }
 
   // шарик
-  ctx.fillStyle = "rgba(106, 90, 205)";
-  ctx.fillRect(60, 280, 10, 10);
+  ctx.fillStyle = config.ball.color;
+  ctx.fillRect(...config.ball.position,...config.ball.size);
 
   // платформа
-  ctx.fillStyle = "rgba(60, 60, 60)";
-  ctx.fillRect(145, 350, 60, 10);
+  ctx.fillStyle = config.platform.color;
+  ctx.fillRect(...config.platform.position,...config.platform.size);
 }
