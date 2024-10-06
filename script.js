@@ -38,9 +38,9 @@ const config = {
     },
   ],
   ball: {
-    position: [150, 300],
+    position: [100, 300],
     size: [10, 10],
-    direction: [-1, -1],
+    direction: [1, 1],
     color: 'rgb(106, 90, 205)',
   },
   platform: {
@@ -49,11 +49,25 @@ const config = {
     color: 'rgb(60, 60, 60)',
   },
   wall: {
-    right: [350, 0, 350, 400],
-    left: [0, 0, 0, 400],
-    top: [0, 0, 350, 0],
-    bottom: [0, 400, 350, 400],
-  },
+    left: {
+      name: 'left',
+      position: [0, 0],
+      size: [0, 400],
+    },
+    right: {
+      name: 'right',
+      position: [350, 0],
+      size: [0, 400],
+    },
+    top: {
+      position: [0, 25],
+      size: [350, 0],
+    },
+    bottom: {
+      position: [0, 400],
+      size: [350, 0],
+    },
+  }
 };
 
 const canvas = document.querySelector('#canvas');
@@ -101,28 +115,37 @@ function moveBall() {
   ball.position[1] += ball.direction[1];
 
   const wall = config.wall;
-  if (ball.position[0] < wall.left[0]) {
+
+  if (isColliding(ball, wall.left) || isColliding(ball, wall.right)) {
     ball.direction[0] = -ball.direction[0];
   }
+  // if (ball.position[0] + ball.size[0] < 0) {
+  //   ball.direction = [0,0];
+  //   clearInterval(int);
+  // }
 
-  if (ball.position[1] < wall.top[1]) {
+  if (isColliding(ball, wall.top) || isColliding(ball, wall.bottom)) {
+    ball.direction[1] = -ball.direction[1]
+  }
+
+  if (isColliding(ball, config.platform)) {
     ball.direction[1] = -ball.direction[1];
   }
 
-  if ((ball.position[0] + ball.size[0]) > wall.right[0]) {
-    ball.direction[0] = -ball.direction[0];
-  }
-
-  if ((ball.position[1] + ball.size[1]) > wall.bottom[1]) {
-    ball.direction[1] = -ball.direction[1];
+  for (const [idx, block] of config.squares.entries()) {
+    if (block && isColliding(ball, block)) {
+      ball.direction[1] = -ball.direction[1];
+      config.squares[idx] = null;
+      ctx.clearRect(...block.position, ...block.size);
+    }
   }
 
   const platform = config.platform;
-  if ((ball.position[1] + ball.size[1]) > platform.position[1] 
-  && ball.position[0] + ball.size[0] > platform.position[0] 
-  && ball.position[0] + ball.size[0] < platform.position[0] + platform.size[0]) {
-    ball.direction[1] = -ball.direction[1];
-  }
+  // if ((ball.position[1] + ball.size[1]) > platform.position[1]
+  //   && ball.position[0] + ball.size[0] > platform.position[0]
+  //   && ball.position[0] + ball.size[0] < platform.position[0] + platform.size[0]) {
+  //   ball.direction[1] = -ball.direction[1];
+  // }
 
   ctx.fillStyle = config.ball.color;
   ctx.fillRect(...config.ball.position, ...config.ball.size);
@@ -130,8 +153,28 @@ function moveBall() {
   requestAnimationFrame(draw);
 }
 
-setInterval(moveBall, 1)
+let int = setInterval(moveBall, 15)
 
-// остановка около стены(любой)
-//       145   205
-// +++++++-----+++++++
+function isColliding(ball, object) {
+
+  const collisions = 
+    ball.position[0] <= (object.position[0] + object.size[0])
+    && ball.position[1] <= (object.position[1] + object.size[1])
+    && (ball.position[0] + ball.size[0]) >= object.position[0]
+    && (ball.position[1] + ball.size[1]) >= object.position[1];
+
+  return collisions;
+  // console.log('colliding ', ball.position, object.name, object.position, '->', collisions)
+  // return collisions.every(c => c);
+  // if (ball.position[1] < wall.top[1]) {
+  //   ball.direction[1] = -ball.direction[1];
+  // }
+
+  // if ((ball.position[0] + ball.size[0]) > wall.right[0]) {
+  //   ball.direction[0] = -ball.direction[0];
+  // }
+
+  // if ((ball.position[1] + ball.size[1]) > wall.bottom[1]) {
+  //   ball.direction[1] = -ball.direction[1];
+  // }
+}
