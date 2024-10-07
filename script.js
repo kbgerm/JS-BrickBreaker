@@ -36,6 +36,11 @@ const config = {
       color: 'rgb(255, 165, 0)',
       hardness: 3,
     },
+    { position: [5, 200],
+      size: [60, 25],
+      color: 'rgb(255, 165, 0)',
+      hardness: 3,
+    },
   ],
   ball: {
     position: [100, 300],
@@ -99,13 +104,6 @@ function draw() {
   ctx.fillRect(...config.platform.position, ...config.platform.size);
 }
 
-// function pointOnCircle(center, radius, angle) {
-//   // return [
-//   //   center[0] + Math.floor(radius*Math.cos(angle)),
-//   //   center[1] + Math.floor(radius*Math.sin(angle)),
-//   // ];
-// }
-
 function moveBall() {
   const ctx = canvas.getContext("2d");
   ctx.clearRect(...config.ball.position, ...config.ball.size);
@@ -140,7 +138,9 @@ function moveBall() {
     }
   }
 
-  const platform = config.platform;
+  
+
+  // const platform = config.platform;
   // if ((ball.position[1] + ball.size[1]) > platform.position[1]
   //   && ball.position[0] + ball.size[0] > platform.position[0]
   //   && ball.position[0] + ball.size[0] < platform.position[0] + platform.size[0]) {
