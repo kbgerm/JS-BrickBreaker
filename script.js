@@ -36,7 +36,8 @@ const config = {
       color: 'rgb(255, 165, 0)',
       hardness: 3,
     },
-    { position: [5, 200],
+    {
+      position: [5, 200],
       size: [60, 25],
       color: 'rgb(255, 165, 0)',
       hardness: 3,
@@ -65,10 +66,12 @@ const config = {
       size: [0, 400],
     },
     top: {
+      name: 'top',
       position: [0, 25],
       size: [350, 0],
     },
     bottom: {
+      name: 'bottom',
       position: [0, 400],
       size: [350, 0],
     },
@@ -91,6 +94,9 @@ function draw() {
 
   // отрисовка квадратов
   for (let i = 0; i < config.squares.length; i++) {
+    if (!config.squares[i]) {
+      continue;
+    }
     ctx.fillStyle = config.squares[i].color;
     ctx.fillRect(...config.squares[i].position, ...config.squares[i].size);
   }
@@ -114,22 +120,40 @@ function moveBall() {
 
   const wall = config.wall;
 
-  if (isColliding(ball, wall.left) || isColliding(ball, wall.right)) {
-    ball.direction[0] = -ball.direction[0];
-  }
+  const walls = [
+    wall.left, wall.right, wall.top, wall.bottom
+  ];
+
+  walls.forEach(w => {
+    if (isColliding(ball, w)) {
+      const side = whichSideColliding(ball, w);
+      if (!side) {
+        return;
+      }
+      console.log(side); 
+      if (side === 'left' || side === 'right') {
+        ball.direction[0] = -ball.direction[0]
+      } else {
+        ball.direction[1] = -ball.direction[1]
+      }
+    }
+  })
+
+  // if (isColliding(ball, wall.left) || isColliding(ball, wall.right)) {
+  //   ball.direction[0] = -ball.direction[0];
+  // }
   // if (ball.position[0] + ball.size[0] < 0) {
   //   ball.direction = [0,0];
   //   clearInterval(int);
   // }
 
-  if (isColliding(ball, wall.top) || isColliding(ball, wall.bottom)) {
-    ball.direction[1] = -ball.direction[1]
-  }
+  // if (isColliding(ball, wall.top) || isColliding(ball, wall.bottom)) {
+  //   ball.direction[1] = -ball.direction[1]
+  // }
 
   if (isColliding(ball, config.platform)) {
     ball.direction[1] = -ball.direction[1];
   }
-
   for (const [idx, block] of config.squares.entries()) {
     if (block && isColliding(ball, block)) {
       ball.direction[1] = -ball.direction[1];
@@ -138,7 +162,7 @@ function moveBall() {
     }
   }
 
-  
+
 
   // const platform = config.platform;
   // if ((ball.position[1] + ball.size[1]) > platform.position[1]
@@ -157,24 +181,26 @@ let int = setInterval(moveBall, 15)
 
 function isColliding(ball, object) {
 
-  const collisions = 
+  const collisions =
     ball.position[0] <= (object.position[0] + object.size[0])
     && ball.position[1] <= (object.position[1] + object.size[1])
     && (ball.position[0] + ball.size[0]) >= object.position[0]
     && (ball.position[1] + ball.size[1]) >= object.position[1];
-
-  return collisions;
   // console.log('colliding ', ball.position, object.name, object.position, '->', collisions)
-  // return collisions.every(c => c);
-  // if (ball.position[1] < wall.top[1]) {
-  //   ball.direction[1] = -ball.direction[1];
-  // }
+  return collisions;
+}
 
-  // if ((ball.position[0] + ball.size[0]) > wall.right[0]) {
-  //   ball.direction[0] = -ball.direction[0];
-  // }
+function whichSideColliding(ball, object) {
 
-  // if ((ball.position[1] + ball.size[1]) > wall.bottom[1]) {
-  //   ball.direction[1] = -ball.direction[1];
-  // }
+  if (ball.position[0] + ball.size[0] > object.position[0] + object.size[0]) {
+    return 'left';
+  } else if (ball.position[1] + ball.size[1] > object.position[1] + object.size[1]) {
+    return 'top'
+  } else if (ball.position[0] < object.position[0]) {
+    return 'right'
+  } else if (ball.position[1] < object.position[1]) {
+    return 'bottom'
+  } else {
+    return null;
+  }
 }
